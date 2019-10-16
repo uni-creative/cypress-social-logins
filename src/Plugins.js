@@ -39,8 +39,20 @@ module.exports.AsanaSocialLogin = async function AsanaSocialLogin(options = {}) 
   validateOptions(options)
 
   const browser = await puppeteer.launch({headless: !!options.headless})
+
   const page = await browser.newPage()
   await page.setViewport({width: 1280, height: 800})
+
+  await page.goto('http://localhost:8100/login')
+
+  await page.waitForSelector('app-login-page', {visible: true})
+
+  let token = options.token
+  console.log('token', token)
+
+  await page.evaluate(() => {
+    window.localStorage.setItem('_cap_token', '2094b1f91c94e096473d47b5f8606197cbb2fe14')
+  })
 
   await page.goto(options.loginUrl)
 
@@ -82,18 +94,15 @@ async function typePassword({page, options} = {}) {
 }
 
 async function typeAsanaUsername({page, options} = {}) {
-  // tara here
   await page.waitForSelector('input[type="email"]')
   await page.type('input[type="email"]', options.username)
-  await page.click('#identifierNext')
 }
 
 async function typeAsanaPassword({page, options} = {}) {
-  // tara here s
   await page.waitForSelector('input[type="password"]', {visible: true})
   await page.type('input[type="password"]', options.password)
-  await page.waitForSelector('#passwordNext', {visible: true})
-  await page.click('#passwordNext')
+  await page.waitForSelector('#submit_button', {visible: true})
+  await page.click('#submit_button')
 }
 
 async function getCookies({page, options} = {}) {
