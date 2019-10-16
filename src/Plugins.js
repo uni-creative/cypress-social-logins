@@ -35,6 +35,28 @@ module.exports.GoogleSocialLogin = async function GoogleSocialLogin(options = {}
   }
 }
 
+module.exports.AsanaSocialLogin = async function AsanaSocialLogin(options = {}) {
+  validateOptions(options)
+
+  const browser = await puppeteer.launch({headless: !!options.headless})
+  const page = await browser.newPage()
+  await page.setViewport({width: 1280, height: 800})
+
+  await page.goto(options.loginUrl)
+
+  await login({page, options})
+  await typeAsanaUsername({page, options})
+  await typeAsanaPassword({page, options})
+
+  const cookies = await getCookies({page, options})
+
+  await finalizeSession({page, browser, options})
+
+  return {
+    cookies
+  }
+}
+
 function validateOptions(options) {
   if (!options.username || !options.password) {
     throw new Error('Username or Password missing for social login')
@@ -53,6 +75,21 @@ async function typeUsername({page, options} = {}) {
 }
 
 async function typePassword({page, options} = {}) {
+  await page.waitForSelector('input[type="password"]', {visible: true})
+  await page.type('input[type="password"]', options.password)
+  await page.waitForSelector('#passwordNext', {visible: true})
+  await page.click('#passwordNext')
+}
+
+async function typeAsanaUsername({page, options} = {}) {
+  // tara here
+  await page.waitForSelector('input[type="email"]')
+  await page.type('input[type="email"]', options.username)
+  await page.click('#identifierNext')
+}
+
+async function typeAsanaPassword({page, options} = {}) {
+  // tara here s
   await page.waitForSelector('input[type="password"]', {visible: true})
   await page.type('input[type="password"]', options.password)
   await page.waitForSelector('#passwordNext', {visible: true})
