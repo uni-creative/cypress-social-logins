@@ -43,16 +43,15 @@ module.exports.AsanaSocialLogin = async function AsanaSocialLogin(options = {}) 
   const page = await browser.newPage()
   await page.setViewport({width: 1280, height: 800})
 
-  await page.goto('http://localhost:8100/login')
+  await page.goto(options.setTokenUrl)
 
-  await page.waitForSelector('app-login-page', {visible: true})
+  await page.waitForSelector(options.setTokenSelector, {visible: true})
 
   let token = options.token
-  console.log('token', token)
 
-  await page.evaluate(() => {
-    window.localStorage.setItem('_cap_token', '2094b1f91c94e096473d47b5f8606197cbb2fe14')
-  })
+  await page.evaluate(token => {
+    window.localStorage.setItem('_cap_token', token)
+  }, token)
 
   await page.goto(options.loginUrl)
 
