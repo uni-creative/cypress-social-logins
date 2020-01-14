@@ -20,6 +20,18 @@ module.exports.GoogleSocialLogin = async function GoogleSocialLogin(options = {}
   const page = await browser.newPage()
   await page.setViewport({width: 1280, height: 800})
 
+  let token = options.token
+
+  if (token) {
+    await page.goto(options.setTokenUrl)
+
+    await page.waitForSelector(options.setTokenSelector, {visible: true})
+
+    await page.evaluate(token => {
+      window.localStorage.setItem('_cap_token', token)
+    }, token)
+  }
+
   await page.goto(options.loginUrl)
 
   await login({page, options})
