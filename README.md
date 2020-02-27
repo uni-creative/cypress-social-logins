@@ -10,7 +10,7 @@
   <a href="https://www.npmjs.org/package/cypress-social-logins"><img src="https://badgen.net/npm/v/cypress-social-logins" alt="npm version"/></a>
   <a href="https://www.npmjs.org/package/cypress-social-logins"><img src="https://badgen.net/npm/license/cypress-social-logins" alt="license"/></a>
   <a href="https://www.npmjs.org/package/cypress-social-logins"><img src="https://badgen.net/npm/dt/cypress-social-logins" alt="downloads"/></a>
-  <a href="https://travis-ci.org/lirantal/cypress-social-logins"><img src="https://badgen.net/travis/lirantal/cypress-social-logins" alt="build"/></a>
+  <a href="https://circleci.com/gh/lirantal/cypress-social-logins"><img src="https://circleci.com/gh/lirantal/cypress-social-logins.svg?style=svg" alt="build"/></a>
   <a href="https://snyk.io/test/github/lirantal/cypress-social-logins"><img src="https://snyk.io/test/github/lirantal/cypress-social-logins/badge.svg" alt="Known Vulnerabilities"/></a>
   <a href="https://github.com/nodejs/security-wg/blob/master/processes/responsible_disclosure_template.md"><img src="https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg" alt="Security Responsible Disclosure" /></a>
 </p>
@@ -61,16 +61,21 @@ return cy.task('GoogleSocialLogin', socialLoginOptions).then(({cookies}) => {
 
 Options passed to the task include:
 
-| Option name          | Description                                                                                                           | Example                                 |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| username             |                                                                                                                       |
-| password             |                                                                                                                       |
-| loginUrl             | The URL for the login page that includes the social network buttons                                                   | https://www.example.com/login           |
-| headless             | Whether to run puppeteer in headless more or not                                                                      | true                                    |
-| logs                 | Whether to log interaction with the loginUrl website & cookie data                                                    | false                                   |
-| loginSelector        | A selector on the page that defines the specific social network to use and can be clicked, such as a button or a link | `'a[href="/auth/auth0/google-oauth2"]'` |
-| postLoginSelector    | A selector on the post-login page that can be asserted upon to confirm a successful login                             | `'.account-panel'`                      |
-| getAllBrowserCookies | Whether to get all browser cookies instead of just ones with the domain of loginUrl                                   | true                                    |
+| Option name          | Description                                                                                                                       | Example                                 |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| username             |                                                                                                                                   |
+| password             |                                                                                                                                   |
+| loginUrl             | The URL for the login page that includes the social network buttons                                                               | https://www.example.com/login           |
+| headless             | Whether to run puppeteer in headless more or not                                                                                  | true                                    |
+| logs                 | Whether to log interaction with the loginUrl website & cookie data                                                                | false                                   |
+| loginSelector        | A selector on the page that defines the specific social network to use and can be clicked, such as a button or a link             | `'a[href="/auth/auth0/google-oauth2"]'` |
+| postLoginSelector    | A selector on the post-login page that can be asserted upon to confirm a successful login                                         | `'.account-panel'`                      |
+| preLoginSelector     | a selector to find and click on before clicking on the login button (useful for accepting cookies)                                | `'.ind-cbar-right button'`              |
+| loginSelectorDelay   | delay a specific amount of time before clicking on the login button, defaults to 250ms. Pass a boolean false to avoid completely. | `100`                                   |
+| getAllBrowserCookies | Whether to get all browser cookies instead of just ones with the domain of loginUrl                                               | true                                    |
+| isPopup              | boolean, is your google auth displayed like a popup                                                                                | true                                    |
+| popupDelay           | number, delay a specific milliseconds before popup is shown. Pass a falsy (false, 0, null, undefined, '') to avoid completely      | 2000                                    |
+| cookieDelay          | number, delay a specific milliseconds before get a cookies. Pass a falsy (false, 0, null,undefined,'') to avoid completely         | 100                                     |
 
 ## Install
 
@@ -115,12 +120,12 @@ describe('Login', () => {
   it('Login through Google', () => {
     const username = Cypress.env('googleSocialLoginUsername')
     const password = Cypress.env('googleSocialLoginPassword')
-
+    const loginUrl = Cypress.env('loginUrl')
     const cookieName = Cypress.env('cookieName')
     const socialLoginOptions = {
       username,
       password,
-      loginUrl: Cypress.env('loginUrl'),
+      loginUrl,
       headless: true,
       logs: false,
       loginSelector: 'a[href="/auth/auth0/google-oauth2"]',
